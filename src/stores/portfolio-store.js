@@ -19,6 +19,14 @@ export const usePortfolioStore = defineStore('portfolio', {
     removeStock(ticker) {
       this.searchedStocks = this.searchedStocks.filter((stock) => stock.ticker !== ticker)
     },
+    updateStock(updatedStock) {
+      const stockIndex = this.searchedStocks.findIndex((s) => s.label === updatedStock.label)
+      if (stockIndex !== -1) {
+        this.searchedStocks[stockIndex] = { ...this.searchedStocks[stockIndex], ...updatedStock }
+      } else {
+        this.searchedStocks.push(updatedStock)
+      }
+    },
   },
 })
 
