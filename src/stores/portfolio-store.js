@@ -11,7 +11,7 @@ export const usePortfolioStore = defineStore('portfolio', {
 
   actions: {
     addStock(stock) {
-      if (!this.searchedStocks.some((s) => s.ticker === stock.ticker)) {
+      if (!this.searchedStocks.some((s) => s.value === stock.value)) {
         this.searchedStocks.push(stock)
       }
     },

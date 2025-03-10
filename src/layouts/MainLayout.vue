@@ -12,31 +12,34 @@
       <q-list>
         <!-- Chart Manager Section -->
         <div class="sidebar-item-container">
-          <div class="label-and-expansion" @click="isExpanded = !isExpanded">
+          <div
+            class="label-and-expansion"
+            @click="chartManagerisExpanded = !chartManagerisExpanded"
+          >
             <q-item-label header> Chart Manager </q-item-label>
             <div class="toggle-line">
               <div class="line"></div>
-              <q-icon name="keyboard_arrow_right" :class="{ rotated: isExpanded }" />
+              <q-icon name="keyboard_arrow_right" :class="{ rotated: chartManagerisExpanded }" />
             </div>
           </div>
           <q-slide-transition>
-            <div v-show="isExpanded">
-              <StockAdder />
+            <div v-show="chartManagerisExpanded">
+              <ChartManager />
             </div>
           </q-slide-transition>
         </div>
 
         <!-- Portfolio Manager Section -->
         <div class="sidebar-item-container">
-          <div class="label-and-expansion" @click="isExpanded = !isExpanded">
+          <div class="label-and-expansion" @click="portManagerisExpanded = !portManagerisExpanded">
             <q-item-label header> Portfolio Manager </q-item-label>
             <div class="toggle-line">
               <div class="line"></div>
-              <q-icon name="keyboard_arrow_right" :class="{ rotated: isExpanded }" />
+              <q-icon name="keyboard_arrow_right" :class="{ rotated: portManagerisExpanded }" />
             </div>
           </div>
           <q-slide-transition>
-            <div v-show="isExpanded"></div>
+            <div v-show="portManagerisExpanded"><PortfolioManager /></div>
           </q-slide-transition>
         </div>
       </q-list>
@@ -50,10 +53,12 @@
 
 <script setup>
 import { ref } from 'vue'
-import StockAdder from 'components/StockAdder.vue'
+import ChartManager from 'src/components/ChartManager.vue.vue'
+import PortfolioManager from 'src/components/PortfolioManager.vue'
 
 const leftDrawerOpen = ref(false)
-const isExpanded = ref(true)
+const chartManagerisExpanded = ref(false)
+const portManagerisExpanded = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
