@@ -42,6 +42,26 @@
             <div v-show="portManagerisExpanded"><PortfolioManager /></div>
           </q-slide-transition>
         </div>
+
+        <div class="sidebar-item-container">
+          <div
+            class="label-and-expansion"
+            @click="comparisonManagerisExpanded = !comparisonManagerisExpanded"
+          >
+            <q-item-label header> Comparison Manager </q-item-label>
+            <div class="toggle-line">
+              <div class="line"></div>
+              <q-icon
+                name="keyboard_arrow_right"
+                :class="{ rotated: comparisonManagerisExpanded }"
+              />
+            </div>
+          </div>
+          <q-slide-transition>
+            <div v-show="comparisonManagerisExpanded"><ComparisonManager /></div>
+          </q-slide-transition>
+        </div>
+        <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
       </q-list>
     </q-drawer>
 
@@ -53,12 +73,16 @@
 
 <script setup>
 import { ref } from 'vue'
-import ChartManager from 'src/components/ChartManager.vue.vue'
+import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
+import ComparisonManager from 'src/components/ComparisonManager.vue'
+import { useChartStore } from 'src/stores/chart-store'
 
 const leftDrawerOpen = ref(false)
 const chartManagerisExpanded = ref(false)
 const portManagerisExpanded = ref(false)
+const comparisonManagerisExpanded = ref(false)
+const chartStore = useChartStore()
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value

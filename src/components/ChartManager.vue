@@ -46,12 +46,14 @@
 <script setup>
 import { ref } from 'vue'
 import { usePortfolioStore } from 'src/stores/portfolio-store'
+import { useChartStore } from 'src/stores/chart-store'
 
 const text = ref('')
 const stockData = ref(null)
 const errorMessage = ref('')
 const stockSearchOptions = ref([])
 const portfolioStore = usePortfolioStore()
+const chartStore = useChartStore()
 
 const timeframeDates = ref(null)
 const timeframeString = ref('')
@@ -100,9 +102,11 @@ const fetchStockDetails = async (ticker) => {
 const handleStockSelection = (ticker) => {
   fetchStockDetails(ticker)
 }
-const updateFormattedTimeframe = () => {
+const updateFormattedTimeframe = async () => {
   if (timeframeDates.value.from && timeframeDates.value.to) {
     timeframeString.value = `${timeframeDates.value.from} - ${timeframeDates.value.to}`
+    chartStore.timeframe.from = timeframeDates.value.from
+    chartStore.timeframe.to = timeframeDates.value.to
   } else {
     timeframeString.value = ''
   }
