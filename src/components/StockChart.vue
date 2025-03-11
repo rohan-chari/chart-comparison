@@ -1,12 +1,16 @@
 <template>
   <div>
-    <h2>SPY Stock Price History</h2>
-    <LineChart v-if="chartData" :chart-data="chartData" :chart-options="chartOptions" />
+    <LineChart
+      class="chart"
+      v-if="chartData"
+      :chart-data="chartData"
+      :chart-options="chartOptions"
+    />
   </div>
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { LineChart } from 'vue-chart-3'
 import {
   Chart as ChartJS,
@@ -19,6 +23,7 @@ import {
   LineController,
   PointElement,
 } from 'chart.js'
+import { useChartStore } from 'src/stores/chart-store'
 
 // Register Chart.js components
 ChartJS.register(
@@ -49,14 +54,17 @@ export default defineComponent({
       },
     })
 
+    const chartStore = useChartStore()
+
     async function fetchStockData() {
       try {
-        const response = await fetch(`${process.env.REQUEST_IP}/stocks/historical/SPY`)
-        const data = await response.json()
+        const data = chartStore.getChartData
 
         // Extract date and closing prices
-        const labels = data.historicalData.map((entry) => new Date(entry.date).toLocaleDateString())
-        const prices = data.historicalData.map((entry) => entry.close)
+        const labels = data[0].historicalData
+          .map((entry) => new Date(entry.date).toISOString())
+          .reverse()
+        const prices = data[0].historicalData.map((entry) => entry.close)
 
         chartData.value = {
           labels,
@@ -76,7 +84,12 @@ export default defineComponent({
       }
     }
 
-    onMounted(fetchStockData)
+    watch(
+      () => chartStore.chartData,
+      () => {
+        fetchStockData()
+      },
+    )
 
     return { chartData, chartOptions }
   },
@@ -87,5 +100,9 @@ export default defineComponent({
 h2 {
   text-align: center;
   margin-bottom: 20px;
+}
+.chart {
+  width: 800px;
+  height: 500px;
 }
 </style>
