@@ -59,23 +59,23 @@ export default defineComponent({
     async function fetchStockData() {
       try {
         const data = chartStore.getChartData
-
+        console.log(data)
         // Extract date and closing prices
-        const labels = data[0].historicalData
-          .map((entry) => new Date(entry.date).toISOString())
-          .reverse()
-        const prices = data[0].historicalData.map((entry) => entry.close)
+        const labels = data[0].historicalData.map((entry) => new Date(entry.date).toISOString())
+        const percentChange = data[0].historicalData.map((entry) => entry.percentChange)
 
         chartData.value = {
           labels,
           datasets: [
             {
               label: 'SPY Closing Price',
-              data: prices,
+              data: percentChange,
               borderColor: 'blue',
               backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              borderWidth: 1,
+              borderWidth: 3,
               pointRadius: 1,
+              pointHoverRadius: 5,
+              tension: 0.2,
             },
           ],
         }
