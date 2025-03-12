@@ -60,7 +60,6 @@ export default defineComponent({
       try {
         const data = chartStore.getChartData
         console.log(data)
-        // Extract date and closing prices
         const labels = data[0].historicalData.map((entry) => new Date(entry.date).toISOString())
         const percentChange = data[0].historicalData.map((entry) => entry.percentChange)
 
