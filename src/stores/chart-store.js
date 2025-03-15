@@ -41,6 +41,7 @@ export const useChartStore = defineStore('chart', {
     },
     removeStockToCompare(stock) {
       this.comparisonStocks = this.comparisonStocks.filter((s) => s != stock)
+      this.applyChartFilters()
     },
   },
 })

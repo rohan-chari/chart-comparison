@@ -59,24 +59,35 @@ export default defineComponent({
     async function fetchStockData() {
       try {
         const data = chartStore.getChartData
-        console.log(data)
-        const labels = data[0].historicalData.map((entry) => new Date(entry.date).toISOString())
-        const percentChange = data[0].historicalData.map((entry) => entry.percentChange)
-
-        chartData.value = {
-          labels,
-          datasets: [
-            {
-              label: 'SPY Closing Price',
-              data: percentChange,
+        const labels = ref([])
+        const dataset = ref([])
+        if (chartData.value && chartData.value.datasets) {
+          chartData.value = null
+        }
+        if (data[0]) {
+          labels.value = data[0].historicalData.map((entry) => new Date(entry.date).toISOString())
+        } else {
+          labels.value = []
+        }
+        for (let i = 0; i < data.length; i++) {
+          if (data[i] && data[i].historicalData.map((entry) => entry.percentChange)) {
+            console.log('pushing,', i)
+            dataset.value.push({
+              label: i,
+              data: data[i].historicalData.map((entry) => entry.percentChange),
               borderColor: 'blue',
               backgroundColor: 'rgba(0, 0, 255, 0.1)',
               borderWidth: 3,
               pointRadius: 1,
               pointHoverRadius: 5,
               tension: 0.2,
-            },
-          ],
+            })
+          }
+        }
+
+        chartData.value = {
+          labels,
+          datasets: dataset,
         }
       } catch (error) {
         console.error('Error fetching stock data:', error)
@@ -86,6 +97,7 @@ export default defineComponent({
     watch(
       () => chartStore.chartData,
       () => {
+        console.log('WATCHING')
         fetchStockData()
       },
     )
