@@ -27,6 +27,21 @@ export const usePortfolioStore = defineStore('portfolio', {
         this.searchedStocks.push(updatedStock)
       }
     },
+    async buildPortfolio(timeframe) {
+      let tickers = this.searchedStocks.map((ss) => ss.value)
+      const encodedTickers = encodeURIComponent(tickers)
+      const timeframeFrom = timeframe.value.from
+      const timeframeTo = timeframe.value.to
+      await fetch(
+        `${process.env.REQUEST_IP}/stocks/historical?tickers=${encodedTickers}&start=${timeframeFrom}&end=${timeframeTo}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+    },
   },
 })
 
