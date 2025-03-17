@@ -25,6 +25,5 @@ const updateChart = (stock) => {
   } else if (!stock.value) {
     chartStore.removeStockToCompare(stock)
   }
-  console.log(chartStore.comparisonStocks)
 }
 </script>

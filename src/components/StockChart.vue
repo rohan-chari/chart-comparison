@@ -1,17 +1,12 @@
 <template>
-  <div>
-    <LineChart
-      class="chart"
-      v-if="chartData"
-      :chart-data="chartData"
-      :chart-options="chartOptions"
-    />
+  <div class="chart-container">
+    <canvas ref="chartCanvas"></canvas>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue'
-import { LineChart } from 'vue-chart-3'
+import { defineComponent, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import moment from 'moment/moment'
 import {
   Chart as ChartJS,
   Title,
@@ -20,8 +15,8 @@ import {
   LineElement,
   CategoryScale,
   LinearScale,
-  LineController,
   PointElement,
+  LineController,
 } from 'chart.js'
 import { useChartStore } from 'src/stores/chart-store'
 
@@ -38,81 +33,87 @@ ChartJS.register(
 )
 
 export default defineComponent({
-  components: { LineChart },
   setup() {
-    const chartData = ref(null)
-    const chartOptions = ref({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true },
-        tooltip: { enabled: true },
-      },
-      scales: {
-        x: { title: { display: true, text: 'Date' } },
-        y: { title: { display: true, text: 'Stock Price (USD)' } },
-      },
-    })
-
+    const chartCanvas = ref(null)
+    let chartInstance = null
     const chartStore = useChartStore()
 
-    async function fetchStockData() {
-      try {
-        const data = chartStore.getChartData
-        const labels = ref([])
-        const dataset = ref([])
-        if (chartData.value && chartData.value.datasets) {
-          chartData.value = null
-        }
-        if (data[0]) {
-          labels.value = data[0].historicalData.map((entry) => new Date(entry.date).toISOString())
-        } else {
-          labels.value = []
-        }
-        for (let i = 0; i < data.length; i++) {
-          if (data[i] && data[i].historicalData.map((entry) => entry.percentChange)) {
-            console.log('pushing,', i)
-            dataset.value.push({
-              label: i,
-              data: data[i].historicalData.map((entry) => entry.percentChange),
-              borderColor: 'blue',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              borderWidth: 3,
-              pointRadius: 1,
-              pointHoverRadius: 5,
-              tension: 0.2,
-            })
-          }
-        }
-
-        chartData.value = {
-          labels,
-          datasets: dataset,
-        }
-      } catch (error) {
-        console.error('Error fetching stock data:', error)
+    // Function to create the chart
+    function createChart(data) {
+      if (chartInstance) {
+        chartInstance.destroy()
       }
+      if (!data || Object.keys(data).length === 0) {
+        console.log('returning')
+        return
+      }
+
+      const labels = data.length
+        ? data[0].historicalData.map((entry) => moment.utc(entry.date).format('MM-DD-YYYY'))
+        : []
+      const datasets = data.map((stock, index) => ({
+        label: stock.ticker,
+        data: stock.historicalData.map((entry) => entry.percentChange),
+        borderColor: generateLineColor(index),
+        backgroundColor: 'rgba(0, 0, 255, 0.1)',
+        borderWidth: 1,
+        pointRadius: 1,
+        pointHoverRadius: 2,
+        tension: 0.2,
+      }))
+
+      chartInstance = new ChartJS(chartCanvas.value, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true },
+            tooltip: { enabled: true },
+          },
+          scales: {
+            x: { title: { display: true, text: 'Date' } },
+            y: { title: { display: true, text: 'Percent (%) Gain' } },
+          },
+        },
+      })
     }
 
+    const generateLineColor = (index) => {
+      let colors = ['blue', 'red', 'green']
+
+      return colors[index]
+    }
+
+    // Watch for chart data updates
     watch(
       () => chartStore.chartData,
-      () => {
-        console.log('WATCHING')
-        fetchStockData()
+      (newData) => {
+        createChart(newData)
       },
+      { deep: true, immediate: true },
     )
 
-    return { chartData, chartOptions }
+    onMounted(() => {
+      if (chartStore.chartData.length) {
+        createChart(chartStore.chartData)
+      }
+    })
+
+    onBeforeUnmount(() => {
+      if (chartInstance) {
+        chartInstance.destroy()
+      }
+    })
+
+    return { chartCanvas }
   },
 })
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.chart {
+.chart-container {
   width: 800px;
   height: 500px;
 }

@@ -5,6 +5,7 @@
         <p class="stock-text">{{ stock.label }}</p>
       </div>
     </div>
+    <q-table dense hide-bottom title="Portfolio" :rows="portfolio" :columns="tableColumns" />
   </div>
   <div v-else>No stocks found.</div>
   <q-dialog v-model="showModal" fullscreen transition-hide="fade">
@@ -57,6 +58,36 @@ const stockQuantity = ref(null)
 const stockCostBasis = ref(null)
 
 const portfolio = computed(() => portfolioStore.getSearchedStocks)
+
+const tableColumns = [
+  {
+    name: 'ticker',
+    required: true,
+    label: 'Stock',
+    align: 'left',
+    field: (row) => row.value,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: 'quantity',
+    required: true,
+    label: 'Quantity',
+    align: 'left',
+    field: (row) => row.quantity,
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: 'costBasis',
+    required: true,
+    label: 'Cost Basis',
+    align: 'left',
+    field: (row) => row.costBasis,
+    format: (val) => `$${val}`,
+    sortable: true,
+  },
+]
 
 const saveStockChanges = () => {
   if (selectedStock.value) {
