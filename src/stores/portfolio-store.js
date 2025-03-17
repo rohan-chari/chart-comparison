@@ -42,6 +42,24 @@ export const usePortfolioStore = defineStore('portfolio', {
         },
       )
     },
+    async performPortfolioCalculations(timeframe) {
+      const payload = {
+        portfolioStocks: this.searchedStocks.map((ss) => ({
+          ticker: ss.value,
+          quantity: ss.quantity,
+          costBasis: ss.costBasis,
+        })),
+        start: timeframe.value.from,
+        end: timeframe.value.to,
+      }
+      await fetch(`${process.env.REQUEST_IP}/portfolio/calculation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+    },
   },
 })
 

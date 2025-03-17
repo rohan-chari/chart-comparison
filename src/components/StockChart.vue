@@ -44,7 +44,6 @@ export default defineComponent({
         chartInstance.destroy()
       }
       if (!data || Object.keys(data).length === 0) {
-        console.log('returning')
         return
       }
 
