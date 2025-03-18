@@ -44,9 +44,10 @@ export default defineComponent({
     function createChart(data) {
       let portfolioStats = portfolioStore.getPortfolioStatistics
       if (chartInstance) {
+        console.log('we destroying??')
         chartInstance.destroy()
       }
-      if ((!portfolioStats && !data) || Object.keys(data).length === 0) {
+      if (!portfolioStats && (!data || Object.keys(data).length === 0)) {
         return
       }
 
@@ -69,9 +70,9 @@ export default defineComponent({
           data: portfolioStats[0].historicalData.map((entry) => entry.percentChange),
           borderColor: 'black',
           backgroundColor: 'rgba(0, 0, 0, 0.1)',
-          borderWidth: 2,
-          pointRadius: 2,
-          pointHoverRadius: 4,
+          borderWidth: 1,
+          pointRadius: 1,
+          pointHoverRadius: 2,
           tension: 0.2,
         })
       }

@@ -65,6 +65,7 @@ export const usePortfolioStore = defineStore('portfolio', {
       return data
     },
     setPorfolioStatistics(portfolioStatistics) {
+      this.portfolioStatistics = []
       this.portfolioStatistics.push(portfolioStatistics)
     },
   },
