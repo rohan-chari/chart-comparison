@@ -62,6 +62,7 @@
           </q-slide-transition>
         </div>
         <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
+        <q-btn color="orange" label="Login" @click="goToLoginPage" />
       </q-list>
     </q-drawer>
 
@@ -73,6 +74,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
 import ComparisonManager from 'src/components/ComparisonManager.vue'
@@ -83,9 +85,13 @@ const chartManagerisExpanded = ref(false)
 const portManagerisExpanded = ref(false)
 const comparisonManagerisExpanded = ref(false)
 const chartStore = useChartStore()
+const router = useRouter()
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+function goToLoginPage() {
+  router.push('/login')
 }
 </script>
 
