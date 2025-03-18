@@ -3,10 +3,12 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 export const usePortfolioStore = defineStore('portfolio', {
   state: () => ({
     searchedStocks: [],
+    portfolioStatistics: [],
   }),
 
   getters: {
     getSearchedStocks: (state) => state.searchedStocks,
+    getPortfolioStatistics: (state) => state.portfolioStatistics,
   },
 
   actions: {
@@ -52,13 +54,18 @@ export const usePortfolioStore = defineStore('portfolio', {
         start: timeframe.value.from,
         end: timeframe.value.to,
       }
-      await fetch(`${process.env.REQUEST_IP}/portfolio/calculation`, {
+      const response = await fetch(`${process.env.REQUEST_IP}/portfolio/calculation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       })
+      const data = await response.json()
+      return data
+    },
+    setPorfolioStatistics(portfolioStatistics) {
+      this.portfolioStatistics.push(portfolioStatistics)
     },
   },
 })

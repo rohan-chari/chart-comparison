@@ -144,7 +144,8 @@ const saveStockChanges = () => {
 
 const buildPortfolio = async () => {
   await portfolioStore.buildPortfolio(timeframe)
-  await portfolioStore.performPortfolioCalculations(timeframe)
+  const portfolioStats = await portfolioStore.performPortfolioCalculations(timeframe)
+  portfolioStore.setPorfolioStatistics(portfolioStats)
 }
 
 const showModalStock = (stock) => {
