@@ -39,6 +39,7 @@ const chartStore = useChartStore()
 
 const timeframeDates = ref(null)
 const timeframeString = ref('')
+const errorMessage = ref('')
 
 const updateFormattedTimeframe = async () => {
   if (timeframeDates.value.from && timeframeDates.value.to) {

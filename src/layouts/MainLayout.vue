@@ -10,17 +10,41 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above elevated>
       <q-list>
+        <!--Profile Section-->
+        <div class="sidebar-item-container">
+          <div class="welcome-container row justify-around">
+            <q-icon v-if="user" size="2.5rem" name="account_circle" />
+            <h6 v-if="!user" header>Welcome</h6>
+            <div v-if="user" class="name-email-container">
+              <p>{{ user.displayName }}</p>
+              <p>{{ user.email }}</p>
+            </div>
+          </div>
+          <div class="row justify-center">
+            <q-btn
+              color="primary"
+              class="login-button"
+              v-if="!user"
+              label="Login"
+              @click="goToLoginPage"
+            />
+            <q-btn
+              color="secondary"
+              class="logout-button"
+              v-if="user"
+              label="Logout"
+              @click="logout"
+            />
+          </div>
+        </div>
+        <q-separator />
         <!-- Chart Manager Section -->
         <div class="sidebar-item-container">
           <div
-            class="label-and-expansion"
+            class="label-and-expansion justify-center"
             @click="chartManagerisExpanded = !chartManagerisExpanded"
           >
-            <q-item-label header> Chart Manager </q-item-label>
-            <div class="toggle-line">
-              <div class="line"></div>
-              <q-icon name="keyboard_arrow_right" :class="{ rotated: chartManagerisExpanded }" />
-            </div>
+            <div class="sidebar-option">Chart Manager</div>
           </div>
           <q-slide-transition>
             <div v-show="chartManagerisExpanded">
@@ -31,12 +55,11 @@
 
         <!-- Portfolio Manager Section -->
         <div class="sidebar-item-container">
-          <div class="label-and-expansion" @click="portManagerisExpanded = !portManagerisExpanded">
-            <q-item-label header> Portfolio Manager </q-item-label>
-            <div class="toggle-line">
-              <div class="line"></div>
-              <q-icon name="keyboard_arrow_right" :class="{ rotated: portManagerisExpanded }" />
-            </div>
+          <div
+            class="label-and-expansion justify-center"
+            @click="portManagerisExpanded = !portManagerisExpanded"
+          >
+            <div class="sidebar-option">Portfolio Manager</div>
           </div>
           <q-slide-transition>
             <div v-show="portManagerisExpanded"><PortfolioManager /></div>
@@ -45,26 +68,16 @@
 
         <div class="sidebar-item-container">
           <div
-            class="label-and-expansion"
+            class="label-and-expansion justify-center"
             @click="comparisonManagerisExpanded = !comparisonManagerisExpanded"
           >
-            <q-item-label header> Comparison Manager </q-item-label>
-            <div class="toggle-line">
-              <div class="line"></div>
-              <q-icon
-                name="keyboard_arrow_right"
-                :class="{ rotated: comparisonManagerisExpanded }"
-              />
-            </div>
+            <div class="sidebar-option">Comparison Manager</div>
           </div>
           <q-slide-transition>
             <div v-show="comparisonManagerisExpanded"><ComparisonManager /></div>
           </q-slide-transition>
         </div>
         <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
-        <q-btn color="orange" v-if="!user" label="Login" @click="goToLoginPage" />
-        <q-btn color="secondary" v-if="user" label="Logout" @click="logout" />
-        <p v-if="user">{{ user.email }}</p>
       </q-list>
     </q-drawer>
 
@@ -111,12 +124,6 @@ function goToLoginPage() {
   padding: 8px;
 }
 
-.toggle-line {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-}
-
 .line {
   flex-grow: 1;
   height: 0.5px;
@@ -137,5 +144,47 @@ function goToLoginPage() {
 
 .rotated {
   transform: rotate(90deg);
+}
+.sidebar-item-container {
+}
+.welcome-container {
+  margin-top: 2rem;
+  h6 {
+    color: black;
+    margin-left: 0.5 rem;
+    margin-bottom: 1rem;
+    margin-top: 0;
+  }
+  margin-left: 1rem;
+  align-items: center;
+}
+.name-email-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  p {
+    margin: 0;
+  }
+}
+.login-button {
+  width: 80%;
+  margin-bottom: 1rem;
+}
+.logout-button {
+  width: 80%;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+.sidebar-option {
+  width: 90%;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  text-align: center;
+  padding: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+.sidebar-option:hover {
+  background-color: rgba(233, 233, 233, 0.784);
+  transform: scale(1.1);
 }
 </style>

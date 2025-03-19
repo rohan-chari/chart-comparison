@@ -29,7 +29,13 @@ const register = async (email, displayName, password) => {
 const login = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
-    userStore.setUser(userCredential.user)
+    const userDisplayName = await getDisplayName(userCredential.user.uid)
+    const userWithDisplayName = {
+      ...userCredential.user,
+      displayName: userDisplayName,
+    }
+
+    userStore.setUser(userWithDisplayName)
     return { success: true, message: 'Logged in Successfully!' }
   } catch (error) {
     console.error('Login error:', error.message)
@@ -82,6 +88,18 @@ const checkUserExists = async (email, displayName) => {
     return { canRegister: false, message: message.message }
   }
   return { canRegister: true, message: message.message }
+}
+
+const getDisplayName = async (userId) => {
+  console.log(userId)
+  const response = await fetch(`${process.env.REQUEST_IP}/user/get-display-name/${userId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  const message = await response.json()
+  return message.displayName
 }
 
 onAuthStateChanged(auth, (firebaseUser) => {
