@@ -3,7 +3,9 @@
     <q-card class="q-pa-md" style="width: 400px">
       <q-card-section>
         <q-input v-model="email" label="Email" type="email" />
+        <q-input v-model="displayName" label="Username" type="text" />
         <q-input v-model="password" label="Password" type="password" />
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       </q-card-section>
       <q-card-actions align="center">
         <q-btn label="Login" color="primary" @click="handleLogin" />
@@ -16,15 +18,35 @@
 <script setup>
 import { ref } from 'vue'
 import { login, register } from '../composables/useAuth'
+import { useQuasar } from 'quasar'
 
 const email = ref('')
+const displayName = ref('')
 const password = ref('')
+const $q = useQuasar()
+
+const errorMessage = ref('')
 
 const handleLogin = async () => {
   await login(email.value, password.value)
 }
 
 const handleRegister = async () => {
-  await register(email.value, password.value)
+  const registration = await register(email.value, displayName.value, password.value)
+  if (!registration.registered) {
+    errorMessage.value = registration.message
+  }
+  $q.notify({
+    message: registration.message,
+    type: registration.registered ? 'positive' : 'negative',
+    position: 'top',
+    timeout: 3000,
+  })
 }
 </script>
+<style scoped>
+.error-message {
+  color: red;
+  font-style: italic;
+}
+</style>

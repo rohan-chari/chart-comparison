@@ -62,7 +62,9 @@
           </q-slide-transition>
         </div>
         <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
-        <q-btn color="orange" label="Login" @click="goToLoginPage" />
+        <q-btn color="orange" v-if="!user" label="Login" @click="goToLoginPage" />
+        <q-btn color="secondary" v-if="user" label="Logout" @click="logout" />
+        <p v-if="user">{{ user.email }}</p>
       </q-list>
     </q-drawer>
 
@@ -79,6 +81,7 @@ import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
 import ComparisonManager from 'src/components/ComparisonManager.vue'
 import { useChartStore } from 'src/stores/chart-store'
+import { user, logout } from 'src/composables/useAuth'
 
 const leftDrawerOpen = ref(false)
 const chartManagerisExpanded = ref(false)
