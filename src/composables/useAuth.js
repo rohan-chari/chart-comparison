@@ -5,9 +5,9 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { ref } from 'vue'
+import { useUserStore } from 'src/stores/user-store'
 
-const user = ref(null)
+const userStore = useUserStore()
 
 const register = async (email, displayName, password) => {
   try {
@@ -15,7 +15,7 @@ const register = async (email, displayName, password) => {
     const message = canRegister.message
     if (canRegister.canRegister) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      user.value = userCredential.user
+      userStore.setUser(userCredential.user)
       await registerUserOnBackend(userCredential.user, displayName)
       return { registered: true, message: message }
     } else {
@@ -29,15 +29,17 @@ const register = async (email, displayName, password) => {
 const login = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
-    user.value = userCredential.user
+    userStore.setUser(userCredential.user)
+    return { success: true, message: 'Logged in Successfully!' }
   } catch (error) {
     console.error('Login error:', error.message)
+    return { success: false, message: 'Invalid Credentials. Please try again' }
   }
 }
 
 const logout = async () => {
   await signOut(auth)
-  user.value = null
+  userStore.setUser(null)
 }
 
 const registerUserOnBackend = async (firebaseUser, displayName) => {
@@ -83,7 +85,7 @@ const checkUserExists = async (email, displayName) => {
 }
 
 onAuthStateChanged(auth, (firebaseUser) => {
-  user.value = firebaseUser
+  userStore.setUser(firebaseUser)
 })
 
-export { user, register, login, logout }
+export { register, login, logout }

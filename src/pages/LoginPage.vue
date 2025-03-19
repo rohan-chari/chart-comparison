@@ -28,10 +28,27 @@ const $q = useQuasar()
 const errorMessage = ref('')
 
 const handleLogin = async () => {
-  await login(email.value, password.value)
+  errorMessage.value = ''
+  const loginSuccess = await login(email.value, password.value)
+  if (loginSuccess.success) {
+    $q.notify({
+      message: loginSuccess.message,
+      type: 'positive',
+      position: 'top',
+      timeout: 3000,
+    })
+  } else {
+    errorMessage.value = loginSuccess.message
+  }
 }
 
 const handleRegister = async () => {
+  errorMessage.value = ''
+
+  if (!email.value || !displayName.value || !password.value) {
+    errorMessage.value = 'Please fill out all required fields'
+    return
+  }
   const registration = await register(email.value, displayName.value, password.value)
   if (!registration.registered) {
     errorMessage.value = registration.message

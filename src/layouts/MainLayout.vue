@@ -75,13 +75,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
 import ComparisonManager from 'src/components/ComparisonManager.vue'
 import { useChartStore } from 'src/stores/chart-store'
-import { user, logout } from 'src/composables/useAuth'
+import { logout } from 'src/composables/useAuth'
+import { useUserStore } from 'src/stores/user-store'
 
 const leftDrawerOpen = ref(false)
 const chartManagerisExpanded = ref(false)
@@ -89,6 +90,9 @@ const portManagerisExpanded = ref(false)
 const comparisonManagerisExpanded = ref(false)
 const chartStore = useChartStore()
 const router = useRouter()
+const userStore = useUserStore()
+
+const user = computed(() => userStore.getUser)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
