@@ -7,8 +7,12 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { useUserStore } from 'src/stores/user-store'
+import { usePortfolioStore } from 'src/stores/portfolio-store'
+import { useChartStore } from 'src/stores/chart-store'
 
 const userStore = useUserStore()
+const portfolioStore = usePortfolioStore()
+const chartStore = useChartStore()
 
 const register = async (email, displayName, password) => {
   try {
@@ -47,7 +51,8 @@ const login = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
     const firebaseUser = userCredential.user
-
+    const token = await firebaseUser.getIdToken()
+    userStore.setToken(token)
     // Fetch display name from backend
     const userDisplayName = await getDisplayName(firebaseUser.uid)
 
@@ -120,6 +125,13 @@ const getDisplayName = async (userId) => {
 onAuthStateChanged(auth, async (firebaseUser) => {
   if (firebaseUser) {
     const userDisplayName = await getDisplayName(firebaseUser.uid)
+    if (!userStore.getToken) {
+      userStore.setToken(await firebaseUser.getIdToken())
+    }
+
+    const portfolio = await portfolioStore.getPortfolio(firebaseUser.uid, userStore.getToken)
+
+    chartStore.setPortfolio(portfolio)
 
     userStore.setUser({
       uid: firebaseUser.uid,

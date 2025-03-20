@@ -1,5 +1,6 @@
 <template>
   <q-select
+    v-model="selectedStock"
     class="add-stock-input q-mb-md"
     rounded
     label="Add a stock to the chart"
@@ -7,6 +8,7 @@
     dense
     clearable
     use-input
+    hide-selected
     :options="stockSearchOptions"
     @filter="searchForStockInfoDelay"
     @update:model-value="handleStockSelection"
@@ -190,23 +192,25 @@ const debounce = (func, delay) => {
 
 const searchForStockInfo = async (val, update, abort) => {
   try {
-    const response = await fetch(
-      `${process.env.REQUEST_IP}/stocks?stockInfo=${encodeURIComponent(val)}`,
-    )
+    if (val) {
+      const response = await fetch(
+        `${process.env.REQUEST_IP}/stocks?stockInfo=${encodeURIComponent(val)}`,
+      )
 
-    if (!response.ok) {
-      abort()
-      throw new Error('Failed to fetch stocks')
+      if (!response.ok) {
+        abort()
+        throw new Error('Failed to fetch stocks')
+      }
+
+      const data = await response.json()
+
+      update(() => {
+        stockSearchOptions.value = data.map((stock) => ({
+          label: `${stock.ticker} - ${stock.company_name}`,
+          value: stock.ticker,
+        }))
+      })
     }
-
-    const data = await response.json()
-
-    update(() => {
-      stockSearchOptions.value = data.map((stock) => ({
-        label: `${stock.ticker} - ${stock.company_name}`,
-        value: stock.ticker,
-      }))
-    })
   } catch (error) {
     console.error('Stock search error:', error)
     abort()

@@ -43,6 +43,12 @@ export const useChartStore = defineStore('chart', {
       this.comparisonStocks = this.comparisonStocks.filter((s) => s != stock)
       this.applyChartFilters()
     },
+    setPortfolio(portfolio) {
+      this.timeframe = { from: portfolio.startDate, to: portfolio.endDate }
+    },
+    setTimeFrame(timeframe) {
+      this.timeframe = timeframe
+    },
   },
 })
 

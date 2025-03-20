@@ -44,7 +44,6 @@ export default defineComponent({
     function createChart(data) {
       let portfolioStats = portfolioStore.getPortfolioStatistics
       if (chartInstance) {
-        console.log('we destroying??')
         chartInstance.destroy()
       }
       if (!portfolioStats && (!data || Object.keys(data).length === 0)) {

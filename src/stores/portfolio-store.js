@@ -68,7 +68,7 @@ export const usePortfolioStore = defineStore('portfolio', {
       this.portfolioStatistics = []
       this.portfolioStatistics.push(portfolioStatistics)
     },
-    async saveTimeframePortfolio(startDate, endDate, userId) {
+    async saveTimeframePortfolio(startDate, endDate, userId, token) {
       const payload = {
         startDate: startDate,
         endDate: endDate,
@@ -77,12 +77,27 @@ export const usePortfolioStore = defineStore('portfolio', {
       const response = await fetch(`${process.env.REQUEST_IP}/portfolio/save-timeframe`, {
         method: 'POST',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       })
       const data = await response.json()
-      console.log(data)
+      return data
+    },
+    async getPortfolio(userId, token) {
+      const response = await fetch(
+        `${process.env.REQUEST_IP}/portfolio/get-portfolio?userId=${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const data = await response.json()
       return data
     },
   },
