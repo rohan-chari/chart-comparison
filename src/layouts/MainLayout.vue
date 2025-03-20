@@ -40,11 +40,8 @@
         <q-separator />
         <!-- Chart Manager Section -->
         <div class="sidebar-item-container">
-          <div
-            class="label-and-expansion justify-center"
-            @click="chartManagerisExpanded = !chartManagerisExpanded"
-          >
-            <div class="sidebar-option">Chart Manager</div>
+          <div class="label-and-expansion justify-center" @click="toggleSection('chartManager')">
+            <div class="sidebar-option">Timeframe</div>
           </div>
           <q-slide-transition>
             <div v-show="chartManagerisExpanded">
@@ -59,9 +56,9 @@
         <div class="sidebar-item-container">
           <div
             class="label-and-expansion justify-center"
-            @click="portManagerisExpanded = !portManagerisExpanded"
+            @click="toggleSection('portfolioManager')"
           >
-            <div class="sidebar-option">Portfolio Manager</div>
+            <div class="sidebar-option">My Investments</div>
           </div>
           <q-slide-transition>
             <div v-show="portManagerisExpanded"><PortfolioManager /></div>
@@ -73,9 +70,9 @@
         <div class="sidebar-item-container">
           <div
             class="label-and-expansion justify-center"
-            @click="comparisonManagerisExpanded = !comparisonManagerisExpanded"
+            @click="toggleSection('comparisonManager')"
           >
-            <div class="sidebar-option">Comparison Manager</div>
+            <div class="sidebar-option">Market Benchmarks</div>
           </div>
           <q-slide-transition>
             <div v-show="comparisonManagerisExpanded"><ComparisonManager /></div>
@@ -103,12 +100,14 @@ import { logout } from 'src/composables/useAuth'
 import { useUserStore } from 'src/stores/user-store'
 
 const leftDrawerOpen = ref(false)
-const chartManagerisExpanded = ref(false)
-const portManagerisExpanded = ref(false)
-const comparisonManagerisExpanded = ref(false)
+const activeSection = ref(null)
 const chartStore = useChartStore()
 const router = useRouter()
 const userStore = useUserStore()
+
+const chartManagerisExpanded = computed(() => activeSection.value === 'chartManager')
+const portManagerisExpanded = computed(() => activeSection.value === 'portfolioManager')
+const comparisonManagerisExpanded = computed(() => activeSection.value === 'comparisonManager')
 
 const user = computed(() => userStore.getUser)
 
@@ -117,6 +116,9 @@ function toggleLeftDrawer() {
 }
 function goToLoginPage() {
   router.push('/login')
+}
+function toggleSection(section) {
+  activeSection.value = activeSection.value === section ? null : section
 }
 </script>
 
@@ -149,8 +151,6 @@ function goToLoginPage() {
 
 .rotated {
   transform: rotate(90deg);
-}
-.sidebar-item-container {
 }
 .welcome-container {
   margin-top: 2rem;

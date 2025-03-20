@@ -35,9 +35,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useChartStore } from 'src/stores/chart-store'
+import { useUserStore } from 'src/stores/user-store'
+import { usePortfolioStore } from 'src/stores/portfolio-store'
 
 const chartStore = useChartStore()
-
+const userStore = useUserStore()
+const portfolioStore = usePortfolioStore()
 const timeframeDates = ref(null)
 const timeframeString = ref('')
 const errorMessage = ref('')
@@ -47,6 +50,13 @@ const updateFormattedTimeframe = async () => {
     timeframeString.value = `${timeframeDates.value.from} - ${timeframeDates.value.to}`
     chartStore.timeframe.from = timeframeDates.value.from
     chartStore.timeframe.to = timeframeDates.value.to
+    if (userStore.getUser) {
+      await portfolioStore.saveTimeframePortfolio(
+        timeframeDates.value.from,
+        timeframeDates.value.to,
+        userStore.getUser.uid,
+      )
+    }
   } else {
     timeframeString.value = ''
   }

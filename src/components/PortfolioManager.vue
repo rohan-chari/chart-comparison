@@ -1,25 +1,46 @@
 <template>
   <q-select
-    class="add-stock-input"
+    class="add-stock-input q-mb-md"
     rounded
-    v-model="text"
     label="Add a stock to the chart"
     outlined
-    use-input
     dense
     clearable
+    use-input
     :options="stockSearchOptions"
     @filter="searchForStockInfoDelay"
     @update:model-value="handleStockSelection"
   />
   <div class="portfolio-manager-container" v-if="portfolio.length">
-    <div v-for="(stock, index) in portfolio" :key="index">
-      <div class="portfolio-stock" @click="showModalStock(stock)">
-        <p class="stock-text">{{ stock.label }}</p>
-      </div>
-    </div>
-    <q-table dense hide-bottom title="Portfolio" :rows="portfolio" :columns="tableColumns" />
-    <q-btn color="primary" label="Build Portfolio" @click="buildPortfolio" />
+    <q-table
+      class="q-mb-md"
+      dense
+      hide-bottom
+      virtual-scroll
+      title="Portfolio"
+      :rows="portfolio"
+      :columns="tableColumns"
+    >
+      <template v-slot:body="props">
+        <q-tr :props="props" @click="showModalStock(props.row)" class="table-row">
+          <q-td key="ticker" :props="props">
+            <p class="table-cell">{{ props.row.value }}</p>
+          </q-td>
+          <q-td key="quantity" :props="props">
+            <p class="table-cell">{{ props.row.quantity }}</p>
+          </q-td>
+          <q-td key="costBasis" :props="props">
+            <p class="table-cell">{{ props.row.costBasis }}</p>
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
+    <q-btn
+      color="primary"
+      class="build-portfolio-btn q-mb-md"
+      label="Build Portfolio"
+      @click="buildPortfolio"
+    />
   </div>
   <div v-else>No stocks found.</div>
   <q-dialog v-model="showModal" fullscreen transition-hide="fade">
@@ -79,7 +100,6 @@ const portfolio = computed(() => portfolioStore.getSearchedStocks)
 
 const timeframe = computed(() => chartStore.getTimeFrame)
 
-const text = ref('')
 const errorMessage = ref('')
 
 const handleStockSelection = (ticker) => {
@@ -218,5 +238,20 @@ const searchForStockInfoDelay = debounce(searchForStockInfo, 500)
 }
 .stock-text {
   margin: 0;
+}
+.table-row {
+  cursor: pointer;
+}
+.table-cell {
+  transition: transform 0.1s ease-in-out;
+  margin: 0;
+  text-align: center;
+}
+.table-cell:hover {
+  cursor: pointer;
+  transform: scale(1.2);
+}
+.build-portfolio-btn {
+  width: 80%;
 }
 </style>
