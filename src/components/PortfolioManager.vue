@@ -1,11 +1,12 @@
 <template>
   <q-select
-    class="add-stock-input q-ml-md q-mb-md"
+    class="add-stock-input"
     rounded
     v-model="text"
     label="Add a stock to the chart"
     outlined
     use-input
+    dense
     clearable
     :options="stockSearchOptions"
     @filter="searchForStockInfoDelay"

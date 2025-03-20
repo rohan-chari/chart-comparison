@@ -19,6 +19,7 @@
 import { ref } from 'vue'
 import { login, register } from '../composables/useAuth'
 import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const displayName = ref('')
@@ -26,6 +27,7 @@ const password = ref('')
 const $q = useQuasar()
 
 const errorMessage = ref('')
+const router = useRouter()
 
 const handleLogin = async () => {
   errorMessage.value = ''
@@ -37,6 +39,7 @@ const handleLogin = async () => {
       position: 'top',
       timeout: 3000,
     })
+    router.push('/')
   } else {
     errorMessage.value = loginSuccess.message
   }

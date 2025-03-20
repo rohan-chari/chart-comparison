@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="checkbox-list">
     <q-checkbox
       v-model="stock.value"
       v-for="stock in comparisonStocksList"
@@ -27,3 +27,9 @@ const updateChart = (stock) => {
   }
 }
 </script>
+<style scoped>
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+}
+</style>

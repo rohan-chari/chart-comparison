@@ -1,10 +1,11 @@
 <template>
   <div>
-    <div class="q-mt-sm">
+    <div class="q-mb-sm">
       <q-input
         v-model="timeframeString"
         label="Enter a timeframe"
         clearable
+        dense
         rounded
         outlined
         class="add-stock-input q-ml-md"

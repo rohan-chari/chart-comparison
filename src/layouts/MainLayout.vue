@@ -16,8 +16,8 @@
             <q-icon v-if="user" size="2.5rem" name="account_circle" />
             <h6 v-if="!user" header>Welcome</h6>
             <div v-if="user" class="name-email-container">
-              <p>{{ user.displayName }}</p>
               <p>{{ user.email }}</p>
+              <p>{{ user.displayName }}</p>
             </div>
           </div>
           <div class="row justify-center">
@@ -53,6 +53,8 @@
           </q-slide-transition>
         </div>
 
+        <q-separator />
+
         <!-- Portfolio Manager Section -->
         <div class="sidebar-item-container">
           <div
@@ -66,6 +68,8 @@
           </q-slide-transition>
         </div>
 
+        <q-separator />
+
         <div class="sidebar-item-container">
           <div
             class="label-and-expansion justify-center"
@@ -77,6 +81,7 @@
             <div v-show="comparisonManagerisExpanded"><ComparisonManager /></div>
           </q-slide-transition>
         </div>
+        <q-separator />
         <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
       </q-list>
     </q-drawer>

@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile,
 } from 'firebase/auth'
 import { useUserStore } from 'src/stores/user-store'
 
@@ -13,29 +14,50 @@ const register = async (email, displayName, password) => {
   try {
     const canRegister = await checkUserExists(email, displayName)
     const message = canRegister.message
+
     if (canRegister.canRegister) {
+      // Create Firebase user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      userStore.setUser(userCredential.user)
-      await registerUserOnBackend(userCredential.user, displayName)
-      return { registered: true, message: message }
+      const firebaseUser = userCredential.user
+
+      // Update Firebase profile with display name
+      await updateProfile(firebaseUser, { displayName })
+
+      // Store user in backend
+      await registerUserOnBackend(firebaseUser, displayName)
+
+      // Store user in Pinia
+      userStore.setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: displayName,
+      })
+
+      return { registered: true, message }
     } else {
-      return { registered: false, message: message }
+      return { registered: false, message }
     }
   } catch (error) {
     console.error('Registration error:', error.message)
+    return { registered: false, message: 'Failed to register. Try again.' }
   }
 }
 
 const login = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
-    const userDisplayName = await getDisplayName(userCredential.user.uid)
-    const userWithDisplayName = {
-      ...userCredential.user,
-      displayName: userDisplayName,
-    }
+    const firebaseUser = userCredential.user
 
-    userStore.setUser(userWithDisplayName)
+    // Fetch display name from backend
+    const userDisplayName = await getDisplayName(firebaseUser.uid)
+
+    // Set user in store
+    userStore.setUser({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: userDisplayName || firebaseUser.displayName || '',
+    })
+
     return { success: true, message: 'Logged in Successfully!' }
   } catch (error) {
     console.error('Login error:', error.message)
@@ -77,33 +99,36 @@ const checkUserExists = async (email, displayName) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      email: email,
-      displayName: displayName,
-    }),
+    body: JSON.stringify({ email, displayName }),
   })
   const message = await response.json()
 
-  if (!response.ok) {
-    return { canRegister: false, message: message.message }
-  }
-  return { canRegister: true, message: message.message }
+  return response.ok
+    ? { canRegister: true, message: message.message }
+    : { canRegister: false, message: message.message }
 }
 
 const getDisplayName = async (userId) => {
-  console.log(userId)
   const response = await fetch(`${process.env.REQUEST_IP}/user/get-display-name/${userId}`, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
   })
-  const message = await response.json()
-  return message.displayName
+  const data = await response.json()
+  return data.displayName
 }
 
-onAuthStateChanged(auth, (firebaseUser) => {
-  userStore.setUser(firebaseUser)
+onAuthStateChanged(auth, async (firebaseUser) => {
+  if (firebaseUser) {
+    const userDisplayName = await getDisplayName(firebaseUser.uid)
+
+    userStore.setUser({
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName: userDisplayName || firebaseUser.displayName || '',
+    })
+  } else {
+    userStore.setUser(null)
+  }
 })
 
 export { register, login, logout }
