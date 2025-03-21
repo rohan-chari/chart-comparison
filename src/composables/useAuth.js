@@ -124,7 +124,7 @@ const getDisplayName = async (userId) => {
 
 onAuthStateChanged(auth, async (firebaseUser) => {
   if (firebaseUser) {
-    const userDisplayName = userStore.getUser.displayName
+    const userDisplayName = await getDisplayName(firebaseUser.uid)
     if (!userStore.getToken) {
       userStore.setToken(await firebaseUser.getIdToken())
     }
