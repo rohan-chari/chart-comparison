@@ -41,7 +41,7 @@ export default defineComponent({
     const portfolioStore = usePortfolioStore()
 
     // Function to create the chart
-    function createChart(data) {
+    function createChart(data, isPortfolio) {
       let portfolioStats = portfolioStore.getPortfolioStatistics
       if (chartInstance) {
         chartInstance.destroy()
@@ -67,7 +67,7 @@ export default defineComponent({
         datasets.push({
           label: 'Your Portfolio',
           data: portfolioStats[0].historicalData.map((entry) => entry.percentChange),
-          borderColor: 'black',
+          borderColor: 'purple',
           backgroundColor: 'rgba(0, 0, 0, 0.1)',
           borderWidth: 1,
           pointRadius: 1,
@@ -76,7 +76,9 @@ export default defineComponent({
         })
       }
 
-      if (data?.length) {
+      if (data?.length && !isPortfolio) {
+        //for stocks on graph that arent the portfolio
+        console.log('this should NOT SHOW UP', data)
         datasets.push(
           ...data.map((stock, index) => ({
             label: stock.ticker,
@@ -119,14 +121,14 @@ export default defineComponent({
     watch(
       () => chartStore.chartData,
       (newData) => {
-        createChart(newData)
+        createChart(newData, false)
       },
       { deep: true, immediate: true },
     )
     watch(
       () => portfolioStore.getPortfolioStatistics,
       (newData) => {
-        createChart(newData)
+        createChart(newData, true)
       },
       { deep: true, immediate: true },
     )

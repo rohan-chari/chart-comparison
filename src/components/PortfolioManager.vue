@@ -84,10 +84,12 @@
 <script setup>
 import { usePortfolioStore } from 'src/stores/portfolio-store'
 import { useChartStore } from 'src/stores/chart-store'
+import { useUserStore } from 'src/stores/user-store'
 import { computed, ref } from 'vue'
 
 const portfolioStore = usePortfolioStore()
 const chartStore = useChartStore()
+const userStore = useUserStore()
 const stockSearchOptions = ref([])
 let showModal = ref(false)
 const modalHeader = ref('')
@@ -154,13 +156,14 @@ const tableColumns = [
   },
 ]
 
-const saveStockChanges = () => {
+const saveStockChanges = async () => {
   if (selectedStock.value) {
     portfolioStore.updateStock({
       label: selectedStock.value.label,
       quantity: stockQuantity.value,
       costBasis: stockCostBasis.value,
     })
+    await portfolioStore.saveStocksPortfolio(userStore.getUser.uid, userStore.getToken)
   }
   showModal.value = false
 }

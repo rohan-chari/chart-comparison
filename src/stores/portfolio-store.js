@@ -85,6 +85,23 @@ export const usePortfolioStore = defineStore('portfolio', {
       const data = await response.json()
       return data
     },
+    async saveStocksPortfolio(userId, token) {
+      const payload = {
+        userId: userId,
+        token: token,
+        portfolioStocks: this.searchedStocks,
+      }
+      const response = await fetch(`${process.env.REQUEST_IP}/portfolio/save-stocks`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      const data = await response.json()
+      return data
+    },
     async getPortfolio(userId, token) {
       const response = await fetch(
         `${process.env.REQUEST_IP}/portfolio/get-portfolio?userId=${userId}`,
@@ -99,6 +116,11 @@ export const usePortfolioStore = defineStore('portfolio', {
 
       const data = await response.json()
       return data
+    },
+    setPortfolio(portfolio) {
+      if (portfolio.portfolioStocks) {
+        this.searchedStocks = portfolio.portfolioStocks
+      }
     },
   },
 })
