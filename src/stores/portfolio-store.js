@@ -67,7 +67,6 @@ export const usePortfolioStore = defineStore('portfolio', {
     setPorfolioStatistics(portfolioStatistics) {
       this.portfolioStatistics = []
       this.portfolioStatistics.push(portfolioStatistics)
-      console.log(this.portfolioStatistics)
     },
     async saveTimeframePortfolio(startDate, endDate, userId, token) {
       const payload = {

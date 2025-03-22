@@ -9,6 +9,7 @@ import {
 import { useUserStore } from 'src/stores/user-store'
 import { usePortfolioStore } from 'src/stores/portfolio-store'
 import { useChartStore } from 'src/stores/chart-store'
+import { ref } from 'vue'
 
 const userStore = useUserStore()
 const portfolioStore = usePortfolioStore()
@@ -130,13 +131,15 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     }
 
     const portfolio = await portfolioStore.getPortfolio(firebaseUser.uid, userStore.getToken)
-    console.log('PORT', portfolio)
     chartStore.setPortfolio(portfolio)
     portfolioStore.setPortfolio(portfolio)
-    if (portfolio.portfolioStocks.length > 0) {
-      portfolioStore.setPorfolioStatistics(portfolio.portfolioStocks)
-    }
-
+    const portfolioStatistics = await portfolioStore.performPortfolioCalculations(
+      ref({
+        from: portfolio.startDate,
+        to: portfolio.endDate,
+      }),
+    )
+    portfolioStore.setPorfolioStatistics(portfolioStatistics)
     userStore.setUser({
       uid: firebaseUser.uid,
       email: firebaseUser.email,

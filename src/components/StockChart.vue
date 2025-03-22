@@ -46,7 +46,6 @@ export default defineComponent({
       const stockData = chartStore.getChartData || []
       const portfolioStats = portfolioStore.getPortfolioStatistics || []
       let result = []
-      console.log('STATTTTTTTTTTS', portfolioStats)
 
       if (portfolioStats.length) {
         result.push({
