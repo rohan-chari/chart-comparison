@@ -130,9 +130,12 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     }
 
     const portfolio = await portfolioStore.getPortfolio(firebaseUser.uid, userStore.getToken)
-
+    console.log('PORT', portfolio)
     chartStore.setPortfolio(portfolio)
     portfolioStore.setPortfolio(portfolio)
+    if (portfolio.portfolioStocks.length > 0) {
+      portfolioStore.setPorfolioStatistics(portfolio.portfolioStocks)
+    }
 
     userStore.setUser({
       uid: firebaseUser.uid,
