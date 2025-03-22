@@ -131,7 +131,10 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     }
 
     const portfolio = await portfolioStore.getPortfolio(firebaseUser.uid, userStore.getToken)
+
     chartStore.setPortfolio(portfolio)
+    chartStore.setComparisonStocks(portfolio.comparisonStocks)
+    chartStore.applyChartFilters()
     portfolioStore.setPortfolio(portfolio)
     const portfolioStatistics = await portfolioStore.performPortfolioCalculations(
       ref({

@@ -79,7 +79,6 @@
           </q-slide-transition>
         </div>
         <q-separator />
-        <q-btn color="primary" label="APPLY" @click="chartStore.applyChartFilters" />
       </q-list>
     </q-drawer>
 
@@ -95,13 +94,13 @@ import { useRouter } from 'vue-router'
 import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
 import ComparisonManager from 'src/components/ComparisonManager.vue'
-import { useChartStore } from 'src/stores/chart-store'
+//import { useChartStore } from 'src/stores/chart-store'
 import { logout } from 'src/composables/useAuth'
 import { useUserStore } from 'src/stores/user-store'
 
 const leftDrawerOpen = ref(false)
 const activeSection = ref(null)
-const chartStore = useChartStore()
+//const chartStore = useChartStore()
 const router = useRouter()
 const userStore = useUserStore()
 

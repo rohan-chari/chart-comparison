@@ -15,12 +15,13 @@
   />
   <div class="portfolio-manager-container" v-if="portfolio.length">
     <q-table
-      class="q-mb-md"
+      class="q-mb-md stocks-table"
       dense
-      hide-bottom
-      virtual-scroll
       title="Portfolio"
       :rows="portfolio"
+      virtual-scroll
+      hide-bottom
+      :rows-per-page-options="[0]"
       :columns="tableColumns"
     >
       <template v-slot:body="props">
@@ -260,5 +261,8 @@ const searchForStockInfoDelay = debounce(searchForStockInfo, 500)
 }
 .build-portfolio-btn {
   width: 80%;
+}
+.stocks-table {
+  height: 300px;
 }
 </style>

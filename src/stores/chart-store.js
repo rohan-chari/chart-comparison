@@ -1,10 +1,9 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { ref } from 'vue'
 
 export const useChartStore = defineStore('chart', {
   state: () => ({
     timeframe: {},
-    comparisonStocks: ref([]),
+    comparisonStocks: [],
     chartData: {},
   }),
 
@@ -36,11 +35,14 @@ export const useChartStore = defineStore('chart', {
       }
     },
     addStockToCompare(stock) {
-      this.comparisonStocks.push(stock)
-      this.applyChartFilters()
+      const exists = this.comparisonStocks.some((s) => s.ticker === stock.ticker)
+      if (!exists) {
+        this.comparisonStocks.push(stock)
+        this.applyChartFilters()
+      }
     },
     removeStockToCompare(stock) {
-      this.comparisonStocks = this.comparisonStocks.filter((s) => s != stock)
+      this.comparisonStocks = this.comparisonStocks.filter((s) => s.ticker !== stock.ticker)
       this.applyChartFilters()
     },
     setPortfolio(portfolio) {
@@ -48,6 +50,28 @@ export const useChartStore = defineStore('chart', {
     },
     setTimeFrame(timeframe) {
       this.timeframe = timeframe
+    },
+    getComparisonStocks() {
+      return this.comparisonStocks
+    },
+    setComparisonStocks(comparisonStocks) {
+      this.comparisonStocks = comparisonStocks || []
+    },
+    async saveComparisonStocksToPortfolio(userId, token) {
+      const payload = {
+        comparisonStocks: this.comparisonStocks,
+        userId: userId,
+      }
+      const response = await fetch(`${process.env.REQUEST_IP}/portfolio/save-comparison-stocks`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      const data = await response.json()
+      return data
     },
   },
 })
