@@ -15,27 +15,30 @@ const userStore = useUserStore()
 const portfolioStore = usePortfolioStore()
 const chartStore = useChartStore()
 
+const isRegistering = ref(false)
+const alreadyLoadedUser = ref(false)
+
 const register = async (email, displayName, password) => {
   try {
     const canRegister = await checkUserExists(email, displayName)
     const message = canRegister.message
 
     if (canRegister.canRegister) {
-      // Create Firebase user
+      isRegistering.value = true
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const firebaseUser = userCredential.user
 
-      // Update Firebase profile with display name
-      await updateProfile(firebaseUser, { displayName })
+      const token = await firebaseUser.getIdToken()
+      userStore.setToken(token)
 
-      // Store user in backend
+      await updateProfile(firebaseUser, { displayName })
       await registerUserOnBackend(firebaseUser, displayName)
 
-      // Store user in Pinia
       userStore.setUser({
         uid: firebaseUser.uid,
         email: firebaseUser.email,
-        displayName: displayName,
+        displayName,
       })
 
       return { registered: true, message }
@@ -50,14 +53,15 @@ const register = async (email, displayName, password) => {
 
 const login = async (email, password) => {
   try {
+    isRegistering.value = false
+    alreadyLoadedUser.value = false
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
     const firebaseUser = userCredential.user
     const token = await firebaseUser.getIdToken()
     userStore.setToken(token)
-    // Fetch display name from backend
+
     const userDisplayName = await getDisplayName(firebaseUser.uid)
 
-    // Set user in store
     userStore.setUser({
       uid: firebaseUser.uid,
       email: firebaseUser.email,
@@ -73,7 +77,9 @@ const login = async (email, password) => {
 
 const logout = async () => {
   await signOut(auth)
-  userStore.setUser(null)
+  userStore.handleLogout()
+  portfolioStore.handleLogout()
+  chartStore.handleLogout()
 }
 
 const registerUserOnBackend = async (firebaseUser, displayName) => {
@@ -87,7 +93,7 @@ const registerUserOnBackend = async (firebaseUser, displayName) => {
     },
     body: JSON.stringify({
       user: {
-        displayName: displayName,
+        displayName,
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         emailVerified: firebaseUser.emailVerified,
@@ -124,7 +130,9 @@ const getDisplayName = async (userId) => {
 }
 
 onAuthStateChanged(auth, async (firebaseUser) => {
-  if (firebaseUser) {
+  if (isRegistering.value) return
+
+  if (firebaseUser && alreadyLoadedUser.value == false) {
     const userDisplayName = await getDisplayName(firebaseUser.uid)
     if (!userStore.getToken) {
       userStore.setToken(await firebaseUser.getIdToken())
@@ -136,6 +144,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     chartStore.setComparisonStocks(portfolio.comparisonStocks)
     chartStore.applyChartFilters()
     portfolioStore.setPortfolio(portfolio)
+
     const portfolioStatistics = await portfolioStore.performPortfolioCalculations(
       ref({
         from: portfolio.startDate,
@@ -143,11 +152,13 @@ onAuthStateChanged(auth, async (firebaseUser) => {
       }),
     )
     portfolioStore.setPorfolioStatistics(portfolioStatistics)
+
     userStore.setUser({
       uid: firebaseUser.uid,
       email: firebaseUser.email,
       displayName: userDisplayName || firebaseUser.displayName || '',
     })
+    alreadyLoadedUser.value = true
   } else {
     userStore.setUser(null)
   }

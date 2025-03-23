@@ -18,6 +18,23 @@ export const useUserStore = defineStore('user', {
     setToken(token) {
       this.token = token
     },
+    async getUserByUsername(username) {
+      const response = await fetch(
+        `${process.env.REQUEST_IP}/user/get-user-by-username/${username}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+      const data = await response.json()
+      return data
+    },
+    handleLogout() {
+      this.user = null
+      this.token = ''
+    },
   },
 })
 

@@ -73,6 +73,11 @@ export const useChartStore = defineStore('chart', {
       const data = await response.json()
       return data
     },
+    handleLogout() {
+      this.timeframe = {}
+      this.comparisonStocks = []
+      this.chartData = {}
+    },
   },
 })
 

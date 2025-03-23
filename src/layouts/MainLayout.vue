@@ -33,7 +33,7 @@
               class="logout-button"
               v-if="user"
               label="Logout"
-              @click="logout"
+              @click="handleLogout"
             />
           </div>
         </div>
@@ -79,6 +79,16 @@
           </q-slide-transition>
         </div>
         <q-separator />
+
+        <div class="sidebar-item-container">
+          <div class="label-and-expansion justify-center" @click="toggleSection('socialManager')">
+            <div class="sidebar-option">Social</div>
+          </div>
+          <q-slide-transition>
+            <div v-show="socialManagerisExpanded"><SocialManager /></div>
+          </q-slide-transition>
+        </div>
+        <q-separator />
       </q-list>
     </q-drawer>
 
@@ -94,6 +104,7 @@ import { useRouter } from 'vue-router'
 import ChartManager from 'src/components/ChartManager.vue'
 import PortfolioManager from 'src/components/PortfolioManager.vue'
 import ComparisonManager from 'src/components/ComparisonManager.vue'
+import SocialManager from 'src/components/SocialManager.vue'
 //import { useChartStore } from 'src/stores/chart-store'
 import { logout } from 'src/composables/useAuth'
 import { useUserStore } from 'src/stores/user-store'
@@ -107,6 +118,7 @@ const userStore = useUserStore()
 const chartManagerisExpanded = computed(() => activeSection.value === 'chartManager')
 const portManagerisExpanded = computed(() => activeSection.value === 'portfolioManager')
 const comparisonManagerisExpanded = computed(() => activeSection.value === 'comparisonManager')
+const socialManagerisExpanded = computed(() => activeSection.value === 'socialManager')
 
 const user = computed(() => userStore.getUser)
 
@@ -118,6 +130,11 @@ function goToLoginPage() {
 }
 function toggleSection(section) {
   activeSection.value = activeSection.value === section ? null : section
+}
+
+const handleLogout = async () => {
+  await logout()
+  router.push('/login')
 }
 </script>
 

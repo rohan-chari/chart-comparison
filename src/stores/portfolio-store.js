@@ -122,6 +122,10 @@ export const usePortfolioStore = defineStore('portfolio', {
         this.searchedStocks = portfolio.portfolioStocks
       }
     },
+    handleLogout() {
+      this.searchedStocks = []
+      this.portfolioStatistics = []
+    },
   },
 })
 
