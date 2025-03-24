@@ -42,9 +42,4 @@ watch(
   { deep: true, immediate: true },
 )
 </script>
-<style scoped>
-.checkbox-list {
-  display: flex;
-  flex-direction: column;
-}
-</style>
+<style scoped></style>

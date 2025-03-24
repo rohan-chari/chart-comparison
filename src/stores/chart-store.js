@@ -5,11 +5,13 @@ export const useChartStore = defineStore('chart', {
     timeframe: {},
     comparisonStocks: [],
     chartData: {},
+    followedUsers: [],
   }),
 
   getters: {
     getTimeFrame: (state) => state.timeframe,
     getChartData: (state) => state.chartData,
+    getFollowedUsers: (state) => state.followedUsers,
   },
 
   actions: {
@@ -72,6 +74,9 @@ export const useChartStore = defineStore('chart', {
       })
       const data = await response.json()
       return data
+    },
+    addFollowedUser(user) {
+      this.followedUsers.push(user)
     },
     handleLogout() {
       this.timeframe = {}

@@ -22,16 +22,29 @@
       </q-item>
     </template>
   </q-select>
+  <div class="checkbox-list">
+    <q-checkbox
+      v-model="user.checked"
+      v-for="user in followedUsers"
+      :key="user.value"
+      :label="user.label"
+      @update:model-value="s"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useUserStore } from 'src/stores/user-store'
+import { useChartStore } from 'src/stores/chart-store'
 
 const userStore = useUserStore()
+const chartStore = useChartStore()
 const selectedUser = ref({})
 const loading = ref(false)
 const userSearchOptions = ref([])
+
+const followedUsers = computed(() => chartStore.getFollowedUsers)
 
 const searchForUsers = async (val, update, abort) => {
   try {
@@ -47,7 +60,7 @@ const searchForUsers = async (val, update, abort) => {
     update(() => {
       userSearchOptions.value = results.map((user) => ({
         label: user.username,
-        value: user.uid,
+        value: user.userId,
       }))
     })
     loading.value = false
@@ -70,8 +83,10 @@ const debounce = (func, delay) => {
 
 const searchForUsersDelay = debounce(searchForUsers, 1000)
 
-const handleUserSelection = () => {
-  // Implement logic when user is selected
+const handleUserSelection = (user) => {
+  if (!followedUsers.value.some((fu) => user.value == fu.value)) {
+    chartStore.addFollowedUser(user)
+  }
 }
 </script>
 
