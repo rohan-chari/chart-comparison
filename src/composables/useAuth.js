@@ -139,9 +139,10 @@ onAuthStateChanged(auth, async (firebaseUser) => {
     }
 
     const portfolio = await portfolioStore.getPortfolio(firebaseUser.uid, userStore.getToken)
-
+    console.log('PORT', portfolio)
     chartStore.setPortfolio(portfolio)
     chartStore.setComparisonStocks(portfolio.comparisonStocks)
+    chartStore.setFollowedUsers(portfolio.followedUsers)
     chartStore.applyChartFilters()
     portfolioStore.setPortfolio(portfolio)
 
@@ -150,6 +151,7 @@ onAuthStateChanged(auth, async (firebaseUser) => {
         from: portfolio.startDate,
         to: portfolio.endDate,
       }),
+      portfolio.followedUserPortfolios,
     )
     portfolioStore.setPorfolioStatistics(portfolioStatistics)
 

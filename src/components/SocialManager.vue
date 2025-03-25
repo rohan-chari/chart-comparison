@@ -28,7 +28,7 @@
       v-for="user in followedUsers"
       :key="user.followedUserUserId"
       :label="user.followedUserDisplayName"
-      @update:model-value="s"
+      @update:model-value="updateFollowedUser(user)"
     />
   </div>
 </template>
@@ -37,12 +37,15 @@
 import { ref, computed } from 'vue'
 import { useUserStore } from 'src/stores/user-store'
 import { useChartStore } from 'src/stores/chart-store'
+import { useQuasar } from 'quasar'
 
 const userStore = useUserStore()
 const chartStore = useChartStore()
 const selectedUser = ref({})
 const loading = ref(false)
 const userSearchOptions = ref([])
+
+const $q = useQuasar()
 
 const followedUsers = computed(() => chartStore.getFollowedUsers)
 
@@ -83,9 +86,24 @@ const debounce = (func, delay) => {
 
 const searchForUsersDelay = debounce(searchForUsers, 1000)
 
-const handleUserSelection = (user) => {
+const handleUserSelection = async (user) => {
+  if (user.followedUserUserId == userStore.getUser.uid) {
+    $q.notify({
+      message: `Cannot follow yourself!`,
+      type: 'negative',
+      position: 'top',
+      timeout: 3000,
+    })
+    return
+  }
   if (!followedUsers.value.some((fu) => user.followedUserUserId == fu.followedUserUserId)) {
-    chartStore.addFollowedUser(user, userStore.getUser.uid, userStore.getToken)
+    await chartStore.addFollowedUser(user, userStore.getUser.uid, userStore.getToken)
+  }
+}
+
+const updateFollowedUser = async (followedUser) => {
+  if (followedUser.followedUserUserId && followedUser.followedUserDisplayName) {
+    await chartStore.updateFollowedUser(followedUser, userStore.getUser.uid, userStore.getToken)
   }
 }
 </script>

@@ -96,6 +96,25 @@ export const useChartStore = defineStore('chart', {
       const data = await response.json()
       return data
     },
+    async updateFollowedUser(followedUser, userId, token) {
+      const payload = {
+        followedUser: followedUser,
+        userId: userId,
+      }
+      const response = await fetch(`${process.env.REQUEST_IP}/portfolio/update-followed-user`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      const data = await response.json()
+      return data
+    },
+    setFollowedUsers(followedUsers) {
+      this.followedUsers = followedUsers
+    },
     handleLogout() {
       this.timeframe = {}
       this.comparisonStocks = []
