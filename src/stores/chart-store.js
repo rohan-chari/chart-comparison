@@ -75,8 +75,26 @@ export const useChartStore = defineStore('chart', {
       const data = await response.json()
       return data
     },
-    addFollowedUser(user) {
-      this.followedUsers.push(user)
+    async addFollowedUser(user, userId, token) {
+      this.followedUsers.push({
+        followedUserDisplayName: user.followedUserDisplayName,
+        followedUserUserId: user.followedUserUserId,
+        checked: false,
+      })
+      const payload = {
+        followedUsers: this.followedUsers,
+        userId: userId,
+      }
+      const response = await fetch(`${process.env.REQUEST_IP}/portfolio/save-followed-user`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+      const data = await response.json()
+      return data
     },
     handleLogout() {
       this.timeframe = {}

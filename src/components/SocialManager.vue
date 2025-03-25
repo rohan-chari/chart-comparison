@@ -17,7 +17,7 @@
     <template v-slot:option="scope">
       <q-item v-bind="scope.itemProps">
         <q-item-section>
-          <span><strong>Username:</strong> {{ scope.opt.label }}</span>
+          <span><strong>Username:</strong> {{ scope.opt.followedUserDisplayName }}</span>
         </q-item-section>
       </q-item>
     </template>
@@ -26,8 +26,8 @@
     <q-checkbox
       v-model="user.checked"
       v-for="user in followedUsers"
-      :key="user.value"
-      :label="user.label"
+      :key="user.followedUserUserId"
+      :label="user.followedUserDisplayName"
       @update:model-value="s"
     />
   </div>
@@ -59,8 +59,8 @@ const searchForUsers = async (val, update, abort) => {
     const results = await userStore.getUserByUsername(val)
     update(() => {
       userSearchOptions.value = results.map((user) => ({
-        label: user.username,
-        value: user.userId,
+        followedUserDisplayName: user.username,
+        followedUserUserId: user.userId,
       }))
     })
     loading.value = false
@@ -84,8 +84,8 @@ const debounce = (func, delay) => {
 const searchForUsersDelay = debounce(searchForUsers, 1000)
 
 const handleUserSelection = (user) => {
-  if (!followedUsers.value.some((fu) => user.value == fu.value)) {
-    chartStore.addFollowedUser(user)
+  if (!followedUsers.value.some((fu) => user.followedUserUserId == fu.followedUserUserId)) {
+    chartStore.addFollowedUser(user, userStore.getUser.uid, userStore.getToken)
   }
 }
 </script>
