@@ -58,7 +58,6 @@ export default defineComponent({
       if (stockData.length) {
         result = result.concat(stockData)
       }
-
       return result
     })
 
@@ -73,11 +72,9 @@ export default defineComponent({
       }
 
       if (!data || data.length === 0 || !data[0].historicalData) return
-
       const labels = data[0].historicalData.map((entry) =>
         moment.utc(entry.date).format('MM-DD-YYYY'),
       )
-
       const datasets = data.map((stock, index) => ({
         label: stock.isPortfolio ? 'Your Portfolio' : stock.ticker,
         data: stock.historicalData.map((entry) => entry.percentChange),

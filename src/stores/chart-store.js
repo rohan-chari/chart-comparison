@@ -52,6 +52,7 @@ export const useChartStore = defineStore('chart', {
     },
     setTimeFrame(timeframe) {
       this.timeframe = timeframe
+      this.applyChartFilters()
     },
     getComparisonStocks() {
       return this.comparisonStocks

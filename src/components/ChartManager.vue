@@ -79,6 +79,8 @@ const updateFormattedTimeframe = async () => {
       userStore.getToken,
     )
     chartStore.setTimeFrame(localTimeframe.value)
+    const portStats = await portfolioStore.performPortfolioCalculations(localTimeframe)
+    portfolioStore.setPorfolioStatistics(portStats)
   }
 }
 

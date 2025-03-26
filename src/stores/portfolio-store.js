@@ -53,13 +53,14 @@ export const usePortfolioStore = defineStore('portfolio', {
         })),
         start: timeframe.value.from,
         end: timeframe.value.to,
-        followedUsersPortfolios: followedUsersPortfolios.map((user) => ({
+        followedUsersPortfolios: followedUsersPortfolios?.map((user) => ({
           _id: user._id,
-          portfolioStocks: user.portfolioStocks.map((stock) => ({
-            ticker: stock.value,
-            quantity: stock.quantity,
-            costBasis: stock.costBasis,
-          })),
+          portfolioStocks:
+            user.portfolioStocks.map((stock) => ({
+              ticker: stock.value,
+              quantity: stock.quantity,
+              costBasis: stock.costBasis,
+            })) || [],
         })),
       }
       const response = await fetch(`${process.env.REQUEST_IP}/portfolio/calculation`, {
