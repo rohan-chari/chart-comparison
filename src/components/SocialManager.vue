@@ -37,10 +37,12 @@
 import { ref, computed } from 'vue'
 import { useUserStore } from 'src/stores/user-store'
 import { useChartStore } from 'src/stores/chart-store'
+import { usePortfolioStore } from 'src/stores/portfolio-store'
 import { useQuasar } from 'quasar'
 
 const userStore = useUserStore()
 const chartStore = useChartStore()
+const portfolioStore = usePortfolioStore()
 const selectedUser = ref({})
 const loading = ref(false)
 const userSearchOptions = ref([])
@@ -104,6 +106,19 @@ const handleUserSelection = async (user) => {
 const updateFollowedUser = async (followedUser) => {
   if (followedUser.followedUserUserId && followedUser.followedUserDisplayName) {
     await chartStore.updateFollowedUser(followedUser, userStore.getUser.uid, userStore.getToken)
+    if (followedUser.checked) {
+      const portfolio = await portfolioStore.getPortfolio(userStore.getUser.uid, userStore.getToken)
+      const portfolioStatistics = await portfolioStore.performPortfolioCalculations(
+        ref({
+          from: portfolio.startDate,
+          to: portfolio.endDate,
+        }),
+        portfolio.followedUserPortfolios,
+      )
+      portfolioStore.setPorfolioStatistics(portfolioStatistics)
+    } else if (!followedUser.checked) {
+      portfolioStore.unfollowFollowedUser(followedUser.followedUserUserId)
+    }
   }
 }
 </script>

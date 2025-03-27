@@ -131,6 +131,14 @@ export const usePortfolioStore = defineStore('portfolio', {
         this.searchedStocks = portfolio.portfolioStocks
       }
     },
+    unfollowFollowedUser(fuUserId) {
+      const followedUsers = this.portfolioStatistics[0].followedUsers
+      const index = followedUsers.findIndex((fu) => fu.userId === fuUserId)
+
+      if (index !== -1) {
+        followedUsers.splice(index, 1)
+      }
+    },
     handleLogout() {
       this.searchedStocks = []
       this.portfolioStatistics = []

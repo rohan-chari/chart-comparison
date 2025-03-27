@@ -6,12 +6,14 @@ export const useChartStore = defineStore('chart', {
     comparisonStocks: [],
     chartData: {},
     followedUsers: [],
+    userPortfolio: {},
   }),
 
   getters: {
     getTimeFrame: (state) => state.timeframe,
     getChartData: (state) => state.chartData,
     getFollowedUsers: (state) => state.followedUsers,
+    getUserPortfolio: (state) => state.userPortfolio,
   },
 
   actions: {
@@ -48,6 +50,7 @@ export const useChartStore = defineStore('chart', {
       this.applyChartFilters()
     },
     setPortfolio(portfolio) {
+      this.userPortfolio = portfolio
       this.timeframe = { from: portfolio.startDate, to: portfolio.endDate }
     },
     setTimeFrame(timeframe) {
@@ -114,7 +117,7 @@ export const useChartStore = defineStore('chart', {
       return data
     },
     setFollowedUsers(followedUsers) {
-      this.followedUsers = followedUsers
+      this.followedUsers = followedUsers || []
     },
     handleLogout() {
       this.timeframe = {}
